@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <style>
+
+    </style>
+</head>
+<body>
+<div class="searchTable" id="searchTable">
+       <div class="layui-inline">
+           <input class="layui-input layui-inline"  id="badge" placeholder="请输入搜索信息" autocomplete="off"   style="display:inline;width: auto;" />
+           <button class="layui-btn" data-type="reload" id="search" >搜索</button>
+       </div>
+    </div>
+
+<table class="layui-hide" lay-filter="test" id="test"></table>
+
+<div style="display: none;padding: 20px" id="saveOrUpdateDiv1">
+
+    <form class="layui-form" lay-filter="dataFrm1" id="dataFrm1">
+        {% csrf_token %}
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">标题:</label>
+                <div class="layui-input-inline">
+                    <input type="hidden" name="id">
+                    <input type="text" name="title" lay-verify="required" placeholder="请输入房屋标题" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">地址:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="address" lay-verify="required" placeholder="请输入房屋地址" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">户型:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="unit_type" lay-verify="required" placeholder="请输入房屋户型" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">创建时间:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="created_time" lay-verify="required" placeholder="请输入房屋建立时间"
+                           autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">厅房数:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="room_type" lay-verify="required" placeholder="请输入房屋厅房数" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">面积:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="area" lay-verify="required" placeholder="请输入房屋面积" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">朝向:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="toward" lay-verify="required" placeholder="请输入房屋朝向" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">总价:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="total_price" lay-verify="required" placeholder="请输入房屋总价" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">单价:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="unit_price" lay-verify="required" placeholder="请输入房屋单价" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">关注人数:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="follows" lay-verify="required" placeholder="请输入房屋关注人数" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm layui-icon layui-icon-release"
+                        lay-filter="doEditSubmit" lay-submit="">提交
+                </button>
+                <button type="reset" class="layui-btn layui-btn-warm layui-btn-sm layui-icon layui-icon-refresh">重置
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/html" id="barDemo">
+    <button type="button" class="layui-btn layui-btn-sm" lay-event="edit">编辑</button>
+    <button type="button" class="layui-btn layui-btn-sm" lay-event="del">删除</button>
+</script>
+<script src="/static/layui/jquery-3.1.1.min.js"></script>
+<script src="/static/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'form'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var mainIndex;
+        tableIns = table.render({
+            elem: '#test'
+            , url: '/house/showsellbypage'
+            ,request: "post"
+            , limit: 14
+            , limits: [5, 10, 18, 20]
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'id', title: 'ID', sort: true, fixed: 'left', width: 60},
+                {field: 'title', title: '房屋标题', width: 150},
+                {field: 'address', title: '地址', width: 100},
+                {field: 'unit_type', title: '户型', width: 100},
+                {field: 'created_time', title: '建立时间', width: 100},
+                {field: 'room_type', title: '厅房数', width: 80},
+                {field: 'area', title: '面积', width: 80, sort: true,},
+                {field: 'toward', title: '朝向', width: 70},
+                {field: 'total_price', title: '总价', width: 80, sort: true,},
+                {field: 'unit_price', title: '单价', width: 80, sort: true,},
+                {field: 'follows', title: '关注人数', width: 110, sort: true,},
+                {title: '操作', minWidth: '140', algin: 'center', toolbar: '#barDemo'}
+            ]]
+            , page: true
+        });
+
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            console.log(data);
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    $.ajax({
+                        url: "/house/dropsell/",
+                        type: "POST",
+                        data: {
+                            "id": data.id,
+                            csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            obj.del();
+                            layer.close(index);
+                            layer.msg("删除成功", {icon: 6});
+                            tableIns.reload();
+                        },
+                        error: function (data) {
+                            layer.msg("删除失败", {icon: 5});
+                        }
+                    });
+                });
+            } else if (obj.event === 'edit') {
+                openUserUpdate(data);
+            }
+        });
+
+        function openUserUpdate(data) {
+            mainIndex = layer.open({
+                type: 1,
+                title: '编辑学生信息',
+                content: $("#saveOrUpdateDiv1"),
+                area: ['800px', '400px'],
+                success: function (index) {
+                    form.val("dataFrm1", data);
+                }, end: function () { // 未点击确定按钮，点击关闭按钮
+                    $("#saveOrUpdateDiv1").css("display", "none");
+                }
+            });
+        }
+
+        form.on("submit(doEditSubmit)", function (obj) {
+            $.post("/house/modifysell/", form.val('dataFrm1'), function (obj) {
+                layer.msg(obj.msg);
+                //关闭弹出层
+                layer.close(mainIndex);
+                $("#saveOrUpdateDiv1").css("display", "none");
+                //刷新数据 表格
+                tableIns.reload();
+            })
+        });
+
+        function reloadAll(a) {
+        a.reload('test', {
+            url: '/house/showsellbypage',
+            page: {
+                curr: 1
+            }
+        })
+    }
+        $('#search').on('click', function () {
+            var msg = $('#badge').val();
+            if (!msg) {
+                reloadAll(table)
+
+            }else {
+
+                table.reload('test', {
+                url: '/house/findsellbymsg/',
+                where: {
+                    msg: msg
+                },
+                page: {
+                    curr: 1
+                }
+            })
+            }
+            tableIns.reload();
+        })
+    });
+
+
+</script>
+</body>
+</html>
